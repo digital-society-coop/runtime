@@ -42,6 +42,18 @@ variable "kubernetes_default_node_pool_node_count" {
   type = number
 }
 
+output "host" {
+  value = digitalocean_kubernetes_cluster.this.kube_config[0].host
+}
+
+output "token" {
+  value = digitalocean_kubernetes_cluster.this.kube_config[0].token
+}
+
+output "ca_certificate" {
+  value = digitalocean_kubernetes_cluster.this.kube_config[0].cluster_ca_certificate
+}
+
 resource "digitalocean_kubernetes_cluster" "this" {
   name    = "${var.service}-${var.environment}"
   region  = var.region
