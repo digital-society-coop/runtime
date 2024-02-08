@@ -43,15 +43,18 @@ variable "kubernetes_default_node_pool_node_count" {
 }
 
 output "host" {
-  value = digitalocean_kubernetes_cluster.this.kube_config[0].host
+  value     = digitalocean_kubernetes_cluster.this.kube_config[0].host
+  sensitive = true
 }
 
 output "token" {
-  value = digitalocean_kubernetes_cluster.this.kube_config[0].token
+  value     = digitalocean_kubernetes_cluster.this.kube_config[0].token
+  sensitive = true
 }
 
 output "ca_certificate" {
-  value = digitalocean_kubernetes_cluster.this.kube_config[0].cluster_ca_certificate
+  value     = digitalocean_kubernetes_cluster.this.kube_config[0].cluster_ca_certificate
+  sensitive = true
 }
 
 resource "digitalocean_kubernetes_cluster" "this" {
