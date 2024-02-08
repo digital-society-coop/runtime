@@ -15,6 +15,10 @@ shift
 environment="$1"
 shift
 
+if [[ -z "${EXTERNAL_DNS_TOKEN+x}" ]]; then
+  echo "Missing required environment variable: EXTERNAL_DNS_TOKEN" >&2
+  exit 1
+fi
 
 stateBucket="do-foundations-$environment-terraform"
 stateKey="$service/$environment.tfstate"
@@ -25,10 +29,17 @@ tfCliArgsInit=(
   "-backend-config=key=$stateKey"
 )
 
-tfCliArgsApply=(
+tfCliArgsPlan=(
   "-var=environment=$environment"
+  "-var=external_dns_token=$EXTERNAL_DNS_TOKEN"
   "-var-file=$environment.tfvars"
 )
 
+# shellcheck disable=SC2206
+tfCliArgsApply=(
+  ${tfCliArgsPlan[@]}
+)
+
 echo "export TF_CLI_ARGS_init='${tfCliArgsInit[*]}'"
+echo "export TF_CLI_ARGS_plan='${tfCliArgsPlan[*]}'"
 echo "export TF_CLI_ARGS_apply='${tfCliArgsApply[*]}'"

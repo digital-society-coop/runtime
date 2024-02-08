@@ -74,11 +74,15 @@ variable "kubernetes_default_node_pool_node_count" {
   type = number
 }
 
+variable "external_dns_token" {
+  type      = string
+  sensitive = true
+}
+
 output "host" {
   value     = digitalocean_kubernetes_cluster.this.kube_config[0].host
   sensitive = true
 }
-
 output "token" {
   value     = digitalocean_kubernetes_cluster.this.kube_config[0].token
   sensitive = true
@@ -104,7 +108,8 @@ resource "digitalocean_kubernetes_cluster" "this" {
 module "runtime" {
   source = "./runtime"
 
-  environment  = var.environment
-  service      = var.service
-  cluster_name = digitalocean_kubernetes_cluster.this.name
+  environment        = var.environment
+  service            = var.service
+  cluster_name       = digitalocean_kubernetes_cluster.this.name
+  external_dns_token = var.external_dns_token
 }
