@@ -1,0 +1,21 @@
+name: checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: terraform fmt -check
+
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: terraform init -backend=false
+      - run: terraform validate
