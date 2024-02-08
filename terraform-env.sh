@@ -23,6 +23,8 @@ tfCliArgsInit=(
   "-backend-config=region=${AWS_REGION:-"$(aws configure get region)"}"
   "-backend-config=bucket=$stateBucket"
   "-backend-config=key=$stateKey"
+  "-var=environment=$environment"
+  "-var-file=$environment.tfvars"
 )
 
 echo "export TF_CLI_ARGS_init='${tfCliArgsInit[*]}'"
