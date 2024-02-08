@@ -19,7 +19,7 @@ echo >&2
 eval "$(./terraform-env.sh "$service" "$environment")"
 
 echo -n "- Initialising terraform... " >&2
-if ! result="$(terraform init)"; then
+if ! result="$(terraform init -input=false -lockfile=readonly)"; then
 	echo 'failed' >&2
 	echo >&2
 	echo "$result" >&2
@@ -28,7 +28,7 @@ fi
 echo 'done' >&2
 
 echo -n "- Running terraform apply... " >&2
-if ! result="$(terraform apply)"; then
+if ! result="$(terraform apply -auto-approve -input=false)"; then
 	echo 'failed' >&2
 	echo >&2
 	echo "$result" >&2
