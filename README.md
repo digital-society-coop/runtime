@@ -8,9 +8,13 @@ See [requirements](docs/requirements.md) for our ideal requirements and [options
 
 ## Deployment
 
+### Automatic deployment
+
 The service is continuously deployed by GitHub Actions.
 
 ### Manual deployment
+
+Prefer to make changes via PR and continuous deployment, but manual deployment is possible if necessary.
 
 #### Prerequisites
 
@@ -32,5 +36,12 @@ The service is continuously deployed by GitHub Actions.
    ```sh
    ./deploy.sh '<env>'
    ```
+
+You can alternatively use the `terraform-env.sh` script to set up environment variables for working directly with Terraform:
+
+```sh
+eval "$(./terraform-env.sh runtime '<env>')"
+terraform ...
+```
 
 [digital-society-coop/do-foundations]: https://github.com/digital-society-coop/do-foundations
