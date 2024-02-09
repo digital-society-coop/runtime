@@ -74,6 +74,10 @@ variable "kubernetes_default_node_pool_node_count" {
   type = number
 }
 
+variable "cert_manager_acme_email" {
+  type = string
+}
+
 variable "external_dns_token" {
   type      = string
   sensitive = true
@@ -108,8 +112,9 @@ resource "digitalocean_kubernetes_cluster" "this" {
 module "runtime" {
   source = "./runtime"
 
-  environment        = var.environment
-  service            = var.service
-  cluster_name       = digitalocean_kubernetes_cluster.this.name
-  external_dns_token = var.external_dns_token
+  environment             = var.environment
+  service                 = var.service
+  cluster_name            = digitalocean_kubernetes_cluster.this.name
+  cert_manager_acme_email = var.cert_manager_acme_email
+  external_dns_token      = var.external_dns_token
 }
