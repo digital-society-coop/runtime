@@ -19,8 +19,10 @@ resource "helm_release" "cert_manager" {
   }
 }
 
-resource "kubernetes_manifest" "cert_manager_issuer_staging" {
-  manifest = yamldecode(<<-EOT
+resource "kubectl_manifest" "cert_manager_issuer_staging" {
+  depends_on = [helm_release.cert_manager]
+
+  yaml_body = <<-YAML
     apiVersion: cert-manager.io/v1
     kind: ClusterIssuer
     metadata:
@@ -34,12 +36,13 @@ resource "kubernetes_manifest" "cert_manager_issuer_staging" {
         solvers:
         - http01:
             ingress: {}
-  EOT
-  )
+  YAML
 }
 
-resource "kubernetes_manifest" "cert_manager_issuer_prod" {
-  manifest = yamldecode(<<-EOT
+resource "kubectl_manifest" "cert_manager_issuer_prod" {
+  depends_on = [helm_release.cert_manager]
+
+  yaml_body = <<-YAML
     apiVersion: cert-manager.io/v1
     kind: ClusterIssuer
     metadata:
@@ -53,6 +56,5 @@ resource "kubernetes_manifest" "cert_manager_issuer_prod" {
         solvers:
         - http01:
             ingress: {}
-  EOT
-  )
+  YAML
 }
