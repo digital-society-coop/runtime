@@ -13,5 +13,14 @@ resource "helm_release" "ingress_nginx" {
     name  = "controller.ingressClassResource.default"
     value = true
   }
-}
 
+  set {
+    name  = "controller.config.use-forwarded-for"
+    value = true
+  }
+
+  set {
+    name  = "controller.config.compute-full-forwarded-for"
+    value = true
+  }
+}
