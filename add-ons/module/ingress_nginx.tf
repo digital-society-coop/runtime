@@ -13,5 +13,9 @@ resource "helm_release" "ingress_nginx" {
     name  = "controller.ingressClassResource.default"
     value = true
   }
-}
 
+  set {
+    name  = "controller.config.use-forwarded-headers"
+    value = true
+  }
+}
