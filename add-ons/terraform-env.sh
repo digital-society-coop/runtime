@@ -41,7 +41,6 @@ tfCliArgsPlan=(
   "-var=environment=$environment"
   "-var=external_dns_token=$EXTERNAL_DNS_TOKEN"
   "-var=cert_manager_acme_email=$CERT_MANAGER_ACME_EMAIL"
-  "-var-file=$environment.tfvars"
 )
 
 # shellcheck disable=SC2206
