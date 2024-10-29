@@ -15,18 +15,8 @@ shift
 environment="$1"
 shift
 
-if [[ -z "${EXTERNAL_DNS_TOKEN+x}" ]]; then
-  echo "Missing required environment variable: EXTERNAL_DNS_TOKEN" >&2
-  exit 1
-fi
-
-if [[ -z "${CERT_MANAGER_ACME_EMAIL+x}" ]]; then
-  echo "Missing required environment variable: CERT_MANAGER_ACME_EMAIL" >&2
-  exit 1
-fi
-
 stateBucket="do-foundations-$environment-terraform"
-stateKey="$service/$environment.tfstate"
+stateKey="$service/$environment-cluster.tfstate"
 
 tfCliArgsInit=(
   "-backend-config=region=${AWS_REGION:-"$(aws configure get region)"}"
@@ -36,8 +26,6 @@ tfCliArgsInit=(
 
 tfCliArgsPlan=(
   "-var=environment=$environment"
-  "-var=external_dns_token=$EXTERNAL_DNS_TOKEN"
-  "-var=cert_manager_acme_email=$CERT_MANAGER_ACME_EMAIL"
   "-var-file=$environment.tfvars"
 )
 
