@@ -47,7 +47,7 @@ output "name" {
 }
 
 output "endpoint" {
-  value     = digitalocean_kubernetes_cluster.this.kube_config[0].endpoint
+  value     = digitalocean_kubernetes_cluster.this.kube_config[0].host
   sensitive = true
 }
 
