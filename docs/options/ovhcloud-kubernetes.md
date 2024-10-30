@@ -1,1 +1,0 @@
-# OVHcloud – Managed Kubernetes Service
