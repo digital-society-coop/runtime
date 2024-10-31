@@ -9,5 +9,7 @@ export NAMESPACE="runtime"
 
 ./deploy-web-analytics.sh
 
+./deploy-observe.sh
+
 echo >&2
 echo 'Deployment of services complete' >&2

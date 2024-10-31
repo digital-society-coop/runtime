@@ -1,0 +1,124 @@
+#
+### Namespace
+#
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $NAMESPACE
+
+#
+### OpenObserve
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $SERVICE
+  namespace: $NAMESPACE
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: $SERVICE
+    app.kubernetes.io/part-of: $SERVICE
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5080
+      protocol: TCP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: $SERVICE-root
+  namespace: $NAMESPACE
+data:
+  password: $BASE64_ROOT_OBSERVE_PASSWORD
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: $SERVICE
+  namespace: $NAMESPACE
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  tls:
+    - hosts:
+        - $MANAGED_DOMAIN
+      secretName: $SERVICE-tls-certificate
+  rules:
+    - host: $MANAGED_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: $SERVICE
+                port:
+                  number: 80
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: $SERVICE
+  namespace: $NAMESPACE
+  labels:
+    name: $SERVICE
+spec:
+  serviceName: $SERVICE
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: $SERVICE
+      app.kubernetes.io/part-of: $SERVICE
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: $SERVICE
+        app.kubernetes.io/part-of: $SERVICE
+    spec:
+      securityContext:
+        fsGroup: 2000
+        runAsUser: 10000
+        runAsGroup: 3000
+        runAsNonRoot: true
+      containers:
+        - name: openobserve
+          image: public.ecr.aws/zinclabs/openobserve:latest
+          env:
+            - name: ZO_ROOT_USER_EMAIL
+              value: $OBSERVE_ROOT_USER_EMAIL
+            - name: ZO_ROOT_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: $SERVICE-root
+                  key: password
+            - name: ZO_DATA_DIR
+              value: /data
+          # command: ["/bin/bash", "-c", "while true; do sleep 1; done"]
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 4096m
+              memory: 2048Mi
+            requests:
+              cpu: 256m
+              memory: 50Mi
+          ports:
+            - containerPort: 5080
+              name: http
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
