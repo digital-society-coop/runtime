@@ -35,6 +35,8 @@ jobs:
       - run: ./deploy.sh
         working-directory: ./add-ons/services
         env:
+          RUNTIME_DOMAIN: ${{ vars.RUNTIME_DEV_DOMAIN }}
           WEB_ANALYTICS_SECRET: ${{ secrets.WEB_ANALYTICS_SECRET }}
           WEB_ANALYTICS_POSTGRES_PASSWORD: ${{ secrets.WEB_ANALYTICS_POSTGRES_PASSWORD }}
-          RUNTIME_DOMAIN: ${{ vars.RUNTIME_DEV_DOMAIN }}
+          OBSERVE_ROOT_USER_EMAIL: ${{ vars.OBSERVE_ROOT_USER_EMAIL }}
+          OBSERVE_ROOT_USER_PASSWORD: ${{ secrets.OBSERVE_ROOT_USER_PASSWORD }}
