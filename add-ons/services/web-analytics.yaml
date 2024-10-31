@@ -1,0 +1,199 @@
+#
+### Namespace
+#
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $NAMESPACE
+
+#
+### postgres
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: $NAMESPACE
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/part-of: $SERVICE
+  ports:
+    - name: db
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres
+  namespace: $NAMESPACE
+data:
+  username: dW1hbWk= # umami
+  password: $BASE64_POSTGRES_PASSWORD
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: $NAMESPACE
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+      app.kubernetes.io/part-of: $SERVICE
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/part-of: $SERVICE
+    spec:
+      restartPolicy: Always
+      # https://github.com/docker-library/postgres/blob/ce5bf6e7eb8f339b2a8561bf8fb5fe5d4e8c96aa/15/alpine3.19/Dockerfile
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_DB
+              value: umami
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+
+#
+### umami
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umami
+  namespace: $NAMESPACE
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: umami
+    app.kubernetes.io/part-of: $SERVICE
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: $SERVICE
+  namespace: $NAMESPACE
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  tls:
+    - hosts:
+        - $MANAGED_DOMAIN
+      secretName: $SERVICE-tls-certificate
+  rules:
+    - host: $MANAGED_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: umami
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: umami
+  namespace: $NAMESPACE
+data:
+  secret: $BASE64_SECRET
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umami
+  namespace: $NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: umami
+      app.kubernetes.io/part-of: $SERVICE
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: umami
+        app.kubernetes.io/part-of: $SERVICE
+    spec:
+      restartPolicy: Always
+      # see https://github.com/umami-software/umami/blob/master/Dockerfile#L35
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+        - name: umami
+          image: ghcr.io/umami-software/umami:postgresql-v2.13.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: DATABASE_TYPE
+              value: postgresql
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: umami
+                  key: secret
+            - name: DATABASE_URL
+              value: postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_SERVICE_HOST):$(POSTGRES_SERVICE_PORT_DB)/umami

@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  deploy-core:
     runs-on: ubuntu-latest
     environment: dev
 
@@ -20,3 +20,21 @@ jobs:
           DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           CERT_MANAGER_ACME_EMAIL: ${{ vars.CERT_MANAGER_ACME_EMAIL }}
           EXTERNAL_DNS_TOKEN: ${{ secrets.EXTERNAL_DNS_TOKEN }}
+
+  deploy-services:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: deploy-core
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 runtime-dev
+      - run: ./deploy.sh
+        working-directory: ./add-ons/services
+        env:
+          WEB_ANALYTICS_SECRET: ${{ secrets.WEB_ANALYTICS_SECRET }}
+          WEB_ANALYTICS_POSTGRES_PASSWORD: ${{ secrets.WEB_ANALYTICS_POSTGRES_PASSWORD }}
+          RUNTIME_DOMAIN: ${{ vars.RUNTIME_DEV_DOMAIN }}
