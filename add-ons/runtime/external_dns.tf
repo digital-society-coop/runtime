@@ -32,7 +32,7 @@ resource "helm_release" "external_dns" {
 
   set {
     name  = "txtPrefix"
-    value = "runtime-dev-external-dns-"
+    value = "runtime-${var.environment}-external-dns-"
   }
 
   set {
