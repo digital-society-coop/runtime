@@ -42,6 +42,10 @@ variable "kubernetes_default_node_pool_node_count" {
   type = number
 }
 
+output "id" {
+  value = digitalocean_kubernetes_cluster.this.id
+}
+
 output "name" {
   value = digitalocean_kubernetes_cluster.this.name
 }
