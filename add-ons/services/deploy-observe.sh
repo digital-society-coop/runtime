@@ -7,6 +7,8 @@ export SERVICE=observe
 echo "Deploying $SERVICE" >&2
 echo >&2
 
+kubectl apply -f kube-state-metrics.yaml
+
 export MANAGED_DOMAIN="$SERVICE.$RUNTIME_DOMAIN"
 BASE64_ROOT_OBSERVE_PASSWORD=$(echo -n "$OBSERVE_ROOT_USER_PASSWORD" | openssl base64 -A)
 
