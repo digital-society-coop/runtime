@@ -99,7 +99,7 @@ spec:
             - name: ZO_DATA_DIR
               value: /data
             - name: ZO_COMPACT_DATA_RETENTION_DAYS
-              value: 30
+              value: "30"
           # command: ["/bin/bash", "-c", "while true; do sleep 1; done"]
           imagePullPolicy: Always
           resources:
@@ -123,7 +123,7 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 10Gi
+            storage: 30Gi
 #
 ### OpenObserve OTEL Collector
 #
