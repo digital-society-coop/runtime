@@ -65,6 +65,7 @@ jobs:
         with:
           token: ${{ env.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 runtime-${{ inputs.environment }}
+      - uses: hashicorp/setup-terraform@v3
       - run: ./deploy.sh
         working-directory: ./add-ons/services
         env:
