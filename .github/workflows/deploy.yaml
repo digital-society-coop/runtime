@@ -44,6 +44,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
       - run: ./deploy.sh ${{ inputs.environment }}
         env:
           AWS_REGION: ${{ env.AWS_REGION }}
