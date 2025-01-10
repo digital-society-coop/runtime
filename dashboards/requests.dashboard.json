@@ -1,0 +1,327 @@
+{
+  "version": 5,
+  "dashboardId": "7283096576241700247",
+  "title": "Requests",
+  "description": "Request duration and statuses",
+  "role": "",
+  "owner": "",
+  "created": "2025-01-09T15:52:24.224Z",
+  "tabs": [
+    {
+      "tabId": "default",
+      "name": "Default",
+      "panels": [
+        {
+          "id": "Panel_ID2033010",
+          "type": "stacked",
+          "title": "HTTP Statuses",
+          "description": "The number of operations grouped by HTTP status codes",
+          "config": {
+            "show_legends": true,
+            "legends_position": "right",
+            "decimals": 0,
+            "line_thickness": 1.5,
+            "top_results_others": false,
+            "axis_border_show": false,
+            "label_option": {
+              "rotate": 0
+            },
+            "show_symbol": false,
+            "line_interpolation": "smooth",
+            "legend_width": {
+              "value": 15,
+              "unit": "%"
+            },
+            "base_map": {
+              "type": "osm"
+            },
+            "map_type": {
+              "type": "world"
+            },
+            "map_view": {
+              "zoom": 1,
+              "lat": 0,
+              "lng": 0
+            },
+            "map_symbol_style": {
+              "size": "by Value",
+              "size_by_value": {
+                "min": 1,
+                "max": 100
+              },
+              "size_fixed": 2
+            },
+            "drilldown": [],
+            "mark_line": [],
+            "override_config": [],
+            "connect_nulls": false,
+            "no_value_replacement": "",
+            "wrap_table_cells": false,
+            "table_transpose": false,
+            "table_dynamic_columns": false,
+            "color": {
+              "mode": "palette-classic-by-series",
+              "fixedColor": [
+                "#53ca53"
+              ],
+              "seriesBy": "last"
+            }
+          },
+          "queryType": "sql",
+          "queries": [
+            {
+              "query": "SELECT operation_name as \"x_axis_1\", count(operation_name) as \"y_axis_1\", http_status_code as \"breakdown_1\"  FROM \"default\"  WHERE reference_parent_span_id IS NULL AND service_name = '$service_name'  GROUP BY x_axis_1, breakdown_1",
+              "vrlFunctionQuery": "",
+              "customQuery": false,
+              "fields": {
+                "stream": "default",
+                "stream_type": "traces",
+                "x": [
+                  {
+                    "label": "Operation Name",
+                    "alias": "x_axis_1",
+                    "column": "operation_name",
+                    "color": null,
+                    "isDerived": false
+                  }
+                ],
+                "y": [
+                  {
+                    "label": "Operation Name",
+                    "alias": "y_axis_1",
+                    "column": "operation_name",
+                    "color": "#5960b2",
+                    "aggregationFunction": "count",
+                    "isDerived": false
+                  }
+                ],
+                "z": [],
+                "breakdown": [
+                  {
+                    "label": "Http Status Code",
+                    "alias": "breakdown_1",
+                    "column": "http_status_code",
+                    "color": null,
+                    "isDerived": false
+                  }
+                ],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": [
+                    {
+                      "type": "condition",
+                      "values": [],
+                      "column": "reference_parent_span_id",
+                      "operator": "Is Null",
+                      "value": null,
+                      "logicalOperator": "AND",
+                      "filterType": "condition"
+                    },
+                    {
+                      "type": "condition",
+                      "values": [],
+                      "column": "service_name",
+                      "operator": "=",
+                      "value": "$service_name",
+                      "logicalOperator": "AND",
+                      "filterType": "condition"
+                    }
+                  ]
+                }
+              },
+              "config": {
+                "promql_legend": "",
+                "layer_type": "scatter",
+                "weight_fixed": 1,
+                "limit": 0,
+                "min": 0,
+                "max": 100,
+                "time_shift": []
+              }
+            }
+          ],
+          "layout": {
+            "x": 0,
+            "y": 0,
+            "w": 48,
+            "h": 10,
+            "i": 2
+          },
+          "htmlContent": "",
+          "markdownContent": ""
+        },
+        {
+          "id": "Panel_ID8871610",
+          "type": "scatter",
+          "title": "Average request duration",
+          "description": "Average request duration by operation",
+          "config": {
+            "show_legends": true,
+            "legends_position": "right",
+            "unit": "microseconds",
+            "decimals": 0,
+            "line_thickness": 1.5,
+            "top_results_others": false,
+            "axis_border_show": false,
+            "label_option": {
+              "rotate": 0
+            },
+            "show_symbol": false,
+            "line_interpolation": "smooth",
+            "legend_width": {
+              "value": 15,
+              "unit": "%"
+            },
+            "base_map": {
+              "type": "osm"
+            },
+            "map_type": {
+              "type": "world"
+            },
+            "map_view": {
+              "zoom": 1,
+              "lat": 0,
+              "lng": 0
+            },
+            "map_symbol_style": {
+              "size": "by Value",
+              "size_by_value": {
+                "min": 1,
+                "max": 100
+              },
+              "size_fixed": 2
+            },
+            "drilldown": [],
+            "mark_line": [],
+            "override_config": [],
+            "connect_nulls": false,
+            "no_value_replacement": "",
+            "wrap_table_cells": false,
+            "table_transpose": false,
+            "table_dynamic_columns": false,
+            "color": {
+              "mode": "palette-classic-by-series",
+              "fixedColor": [
+                "#53ca53"
+              ],
+              "seriesBy": "last"
+            }
+          },
+          "queryType": "sql",
+          "queries": [
+            {
+              "query": "SELECT histogram(_timestamp) as \"x_axis_1\", avg(duration) as \"y_axis_1\", operation_name as \"breakdown_1\"  FROM \"default\"  WHERE reference_parent_span_id IS NULL AND service_name = '$service_name'  GROUP BY x_axis_1, breakdown_1 ORDER BY x_axis_1 ASC",
+              "vrlFunctionQuery": "",
+              "customQuery": false,
+              "fields": {
+                "stream": "default",
+                "stream_type": "traces",
+                "x": [
+                  {
+                    "label": "Timestamp",
+                    "alias": "x_axis_1",
+                    "column": "_timestamp",
+                    "color": null,
+                    "aggregationFunction": "histogram",
+                    "sortBy": "ASC",
+                    "isDerived": false
+                  }
+                ],
+                "y": [
+                  {
+                    "label": "Duration",
+                    "alias": "y_axis_1",
+                    "column": "duration",
+                    "color": "#5960b2",
+                    "aggregationFunction": "avg",
+                    "isDerived": false
+                  }
+                ],
+                "z": [],
+                "breakdown": [
+                  {
+                    "label": "Operation Name",
+                    "alias": "breakdown_1",
+                    "column": "operation_name",
+                    "color": null,
+                    "isDerived": false
+                  }
+                ],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": [
+                    {
+                      "type": "condition",
+                      "values": [],
+                      "column": "reference_parent_span_id",
+                      "operator": "Is Null",
+                      "value": null,
+                      "logicalOperator": "AND",
+                      "filterType": "condition"
+                    },
+                    {
+                      "type": "condition",
+                      "values": [],
+                      "column": "service_name",
+                      "operator": "=",
+                      "value": "$service_name",
+                      "logicalOperator": "AND",
+                      "filterType": "condition"
+                    }
+                  ]
+                }
+              },
+              "config": {
+                "promql_legend": "",
+                "layer_type": "scatter",
+                "weight_fixed": 1,
+                "limit": 0,
+                "min": 0,
+                "max": 100,
+                "time_shift": []
+              }
+            }
+          ],
+          "layout": {
+            "x": 0,
+            "y": 10,
+            "w": 48,
+            "h": 10,
+            "i": 3
+          },
+          "htmlContent": "",
+          "markdownContent": ""
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "list": [
+      {
+        "type": "query_values",
+        "name": "service_name",
+        "label": "",
+        "query_data": {
+          "stream_type": "traces",
+          "stream": "default",
+          "field": "service_name",
+          "max_record_size": null,
+          "filter": []
+        },
+        "value": "",
+        "options": [],
+        "multiSelect": false,
+        "hideOnDashboard": false,
+        "selectAllValueForMultiSelect": "first",
+        "customMultiSelectValue": []
+      }
+    ],
+    "showDynamicFilters": true
+  },
+  "defaultDatetimeDuration": {
+    "type": "relative",
+    "relativeTimePeriod": "15m"
+  }
+}
