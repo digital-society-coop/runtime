@@ -11,5 +11,7 @@ export NAMESPACE="runtime"
 
 ./deploy-observe.sh
 
+./deploy-status.sh
+
 echo >&2
 echo 'Deployment of services complete' >&2
