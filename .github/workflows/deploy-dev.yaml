@@ -1,8 +1,8 @@
 name: deploy (dev)
 
-on:
-  push:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
 
 jobs:
   deploy:
