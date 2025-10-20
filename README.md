@@ -4,7 +4,7 @@ A multi-service runtime environment.
 
 This repository defines a `runtime` service, based on DigitalOcean Kubernetes.
 
-See [requirements](docs/requirements.md) for our ideal requirements and [options](docs/options) for options considered, though we have yet to undertake an options appraisal.
+See [requirements](https://github.com/digital-society-coop/runtime/wiki/Requirements) for our ideal requirements.
 
 ## Deployment
 
